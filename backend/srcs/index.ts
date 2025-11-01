@@ -11,20 +11,20 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
   const s3 = new S3Client({ region: process.env.AWS_REGION || "eu-north-1" });
 
   const fortunes = [
-    "You will write bug-free code today",
-    "Your next deployment will be silky smooth",
-    "A merge conflict approaches, but you’ll win",
-    "Something unexpected will happen today",
-    "You will find an excellent intern! ;)",
-    "You will have a great day!",
-    "A new opportunity is on the horizon.",
-    "Today is a perfect day to learn something new."
+    "you will write bug-free code today.",
+    "your next deployment will be silky smooth.",
+    "a merge conflict approaches, but you’ll win.",
+    "something unexpected will happen today!",
+    "you will find an excellent intern! ;)",
+    "you will have a great day!",
+    "a new opportunity is on the horizon.",
+    "today is a perfect day to learn something new."
   ];
 
   server.get("/fortune", async (request) => {
     const name = (request.query as any).name || "Stranger";
     const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
-    return { message: `${name}, ${fortune}.` };
+    return { message: `${name}, ${fortune}` };
   });
 
   server.get("/photo", async () => {
