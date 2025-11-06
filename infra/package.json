@@ -5,6 +5,7 @@
     "infra": "bin/infra.js"
   },
   "scripts": {
+    "deploy": "cd ../frontend && npm ci && npm run build && cd ../infra && npm ci && npm run build && npx cdk deploy",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
