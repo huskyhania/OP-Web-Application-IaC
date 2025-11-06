@@ -1,12 +1,14 @@
 import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import awsLambdaFastify from "@fastify/aws-lambda";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-(async () => {
-  const server = Fastify({ logger: true });
-  await server.register(cors, { origin: "*" });
+const app = Fastify({ logger: true });
+
+async function setup() {
+  await app.register(cors, { origin: "*" });
 
   const s3 = new S3Client({ region: process.env.AWS_REGION || "eu-north-1" });
 
@@ -21,13 +23,13 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
     "today is a perfect day to learn something new."
   ];
 
-  server.get("/fortune", async (request) => {
+  app.get("/fortune", async (request) => {
     const name = (request.query as any).name || "Stranger";
     const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
     return { message: `${name}, ${fortune}` };
   });
 
-  server.get("/photo", async () => {
+  app.get("/photo", async () => {
     const url = await getSignedUrl(
       s3,
       new GetObjectCommand({
@@ -38,7 +40,10 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
     );
     return { url };
   });
+}
 
-  const port = Number(process.env.PORT) || 4241;
-  await server.listen({ port, host: "0.0.0.0" });
-})();
+// initialize routes/plugins
+setup();
+
+// ✅ export handler for AWS Lambda
+export const handler = awsLambdaFastify(app);

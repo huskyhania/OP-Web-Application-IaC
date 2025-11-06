@@ -33,14 +33,14 @@ function App() {
             onClick={openPhoto}
             style={{ padding: "10px 20px", fontSize: "16px", borderRadius: "8px", marginRight: "10px", cursor: "pointer" }}
           >
-            📷 See my photo
+            See author's photo 📷 🐶
           </button>
 
           <Link to="/fortune">
             <button
               style={{ padding: "10px 20px", fontSize: "16px", borderRadius: "8px", cursor: "pointer" }}
             >
-              🔮 Tell me my fortune
+              Tell me my fortune 🔮
             </button>
           </Link>
         </div>

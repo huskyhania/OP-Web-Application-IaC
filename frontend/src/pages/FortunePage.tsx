@@ -6,11 +6,13 @@ export default function FortunePage() {
   const [name, setName] = useState("");
   const [fortune, setFortune] = useState("");
 
+  const apiBase = import.meta.env.VITE_API_URL || "";
   const getFortune = async () => {
     if (!name) return alert("Please enter your name!");
     setFortune("Loading your fortune... 🔮");
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/fortune?name=${encodeURIComponent(name)}`);
+      //const res = await fetch(`${import.meta.env.VITE_API_URL}/fortune?name=${encodeURIComponent(name)}`);
+      const res = await fetch(`${apiBase}/fortune?name=${encodeURIComponent(name)}`);
       const data = await res.json();
       setFortune(data.message);
     } catch {
@@ -21,7 +23,7 @@ export default function FortunePage() {
   return (
     <div className="app-background">
       <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
-        <h1>🔮 Your Fortune Awaits</h1>
+        <h1>Your fortune awaits 🔮</h1>
         <input
           type="text"
           placeholder="Enter your name..."
@@ -45,7 +47,7 @@ export default function FortunePage() {
         {fortune && <p style={{ marginTop: 30, fontSize: 20 }}>✨ {fortune}</p>}
 
         <p style={{ marginTop: 40 }}>
-          <Link to="/">⬅ Back to home</Link>
+          <Link to="/">Back to home ⬅</Link>
         </p>
       </div>
     </div>
