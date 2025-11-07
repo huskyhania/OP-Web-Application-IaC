@@ -8,10 +8,17 @@ import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as apigwInt from "aws-cdk-lib/aws-apigatewayv2-integrations";
 
+import { execSync } from "child_process";
+
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    execSync("npm ci && npm run build", {
+      cwd: path.join(__dirname, "../../frontend"),
+      stdio: "inherit"
+    });
+    
     const siteBucket = new s3.Bucket(this, "FrontendBucket", {
       websiteIndexDocument: "index.html",
       publicReadAccess: true,
