@@ -10,7 +10,7 @@ const app = Fastify({ logger: true });
 async function setup() {
   await app.register(cors, { origin: "*" });
 
-  const s3 = new S3Client({ region: process.env.AWS_REGION || "eu-north-1" });
+  const s3 = new S3Client({});
 
   const fortunes = [
     "you will write bug-free code today.",
