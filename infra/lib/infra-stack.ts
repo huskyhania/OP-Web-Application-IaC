@@ -46,7 +46,7 @@ export class InfraStack extends cdk.Stack {
     });
 
 
-    // Lambda backend with Fastify
+    /* Lambda backend with Fastify
     const backendFn = new lambdaNodejs.NodejsFunction(this, "BackendFn", {
       entry: path.join(__dirname, "../../backend/srcs/index.ts"),
       handler: "handler",
@@ -58,6 +58,17 @@ export class InfraStack extends cdk.Stack {
       depsLockFilePath: path.join(__dirname, "../../backend/package-lock.json"),
       projectRoot: path.join(__dirname, "../../backend"),
       timeout: cdk.Duration.seconds(10), 
+    });*/
+
+    //Lambda using Dockerfile
+    const backendFn = new lambda.DockerImageFunction(this, "BackendFn", {
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, "../../backend")),
+      functionName: `${this.stackName}-BackendFn`,
+      timeout: cdk.Duration.seconds(10), 
+      environment: {
+        PHOTO_BUCKET: photoBucket.bucketName,
+        PHOTO_KEY: 'profile.jpg', 
+      },
     });
     
     // Permissions for Lambda to use photo bucket
