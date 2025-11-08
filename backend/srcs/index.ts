@@ -45,5 +45,4 @@ async function setup() {
 // initialize routes/plugins
 setup();
 
-// ✅ export handler for AWS Lambda
 export const handler = awsLambdaFastify(app);

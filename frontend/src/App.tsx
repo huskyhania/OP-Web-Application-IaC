@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function App() {
   const openPhoto = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/photo`);
+      const res = await fetch(`/photo`);
       const data = await res.json();
       // open photo in a new tab
       window.open(data.url, "_blank");
