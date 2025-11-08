@@ -6,13 +6,15 @@ export default function FortunePage() {
   const [name, setName] = useState("");
   const [fortune, setFortune] = useState("");
 
-  const apiBase = import.meta.env.VITE_API_URL || "";
+  //const apiBase = ""; // leave empty so it uses same origin
+  
   const getFortune = async () => {
     if (!name) return alert("Please enter your name!");
     setFortune("Loading your fortune... 🔮");
     try {
       //const res = await fetch(`${import.meta.env.VITE_API_URL}/fortune?name=${encodeURIComponent(name)}`);
-      const res = await fetch(`${apiBase}/fortune?name=${encodeURIComponent(name)}`);
+      //const res = await fetch(`${apiBase}/fortune?name=${encodeURIComponent(name)}`);
+      const res = await fetch(`/fortune?name=${encodeURIComponent(name)}`);
       const data = await res.json();
       setFortune(data.message);
     } catch {
