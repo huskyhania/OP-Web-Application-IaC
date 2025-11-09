@@ -9,7 +9,7 @@ The goal is to implement and deploy a Simple Web Application using Infrastructur
 ## Overview:
 The application consists of three main parts:
 - Frontend: built with TypeScript, React, and Vite
-- Backend: implemented using Fastify, running as an AWS Lambda function function built from a custom Dockerfile
+- Backend: implemented using Fastify, running as an AWS Lambda function built from a custom Dockerfile
 - Infrastructure: defined in TypeScript using AWS CDK to set up several services on AWS:
   - AWS Lambda (runs the backend inside the Docker container)
   - S3 buckets (store static website assets and images)
@@ -18,7 +18,11 @@ The application consists of three main parts:
 ---
 
 ## Prerequisites:
-In order to deploy the program you're going to need: Node.js and npm, AWS Command Line Interface (AWS CLI), AWS Cloud Development Kit (CDK) and Docker Desktop (for iOS/Windows deployment)
+In order to deploy the app you're going to need: 
+- Node.js and npm,
+- AWS Command Line Interface (AWS CLI)
+- AWS Cloud Development Kit (CDK)
+- Docker (or Docker Desktop for iOS/Windows deployment)
 
 Installing Node.js might require sudo rights. On Linux the commands are:
 ```bash
@@ -29,6 +33,7 @@ apt install npm
 1. Clone the repository and go to the infra directory:
 ```bash
 git clone https://github.com/huskyhania/OP-Web-Application-IaC
+cd OP-Web-Application-IaC
 cd infra
 ```
 
@@ -52,9 +57,9 @@ aws configure
 ```
 During configuration, you’ll need your AWS Access Key ID, Secret Access Key, and region.
 
-5. If you're using iOS or Windows, download Docker Desktop and start it before continuing
+5. If you're using iOS or Windows, download Docker Desktop and start it before continuing. You can find it here https://www.docker.com/products/docker-desktop/
 
-6. Bootstrap AWS account:
+6. If you are using a new AWS account, you need to bootstrap it:
 ```bash
 cdk bootstrap
 ```
@@ -63,13 +68,20 @@ You will get prompted for account id and region. Bootstrapping should be done on
 cdk bootstrap aws://<ACCOUNT_ID>/<REGION>
 ```
 
-7. Start Docker Desktop if you’re on macOS or Windows (optional step).
-
-8. Last step is deployment of the stack:
+7. Last step is deployment of the stack:
 ```bash
 cdk deploy
 ```
-9. To destroy the infrastructure:
+Once the deployment is complete, you will see several links displayed on the terminal. Copy the Cloudfront one to the browser to visit the website.
+
+Example:
+
+```bash
+Outputs:
+InfraStack.CloudFrontURL = https://12346abcdef.cloudfront.net
+```
+
+8. To destroy the infrastructure:
 ```bash
 cdk destroy
 ```
@@ -93,4 +105,4 @@ This project successfully deploys a full-stack web application using AWS CDK, bu
 
 **Route 53 and custom domains:** I’m aware that AWS Route 53 could be used to attach a custom domain name to the CloudFront distribution (together with AWS Certificate Manager for HTTPS). For simplicity, this version uses the default CloudFront URL instead.
 
-**EC2 and alternative hosting options:** The backend could run on Amazon EC2 for more control over runtime and scaling. However, the choice of AWS Lambda made setup simpler, fully serverless, and easier to manage through CDK.
+**EC2 and alternative hosting options:** The backend could run on Amazon EC2 for more control over runtime and scaling. However, the choice of AWS Lambda made setup simpler, fully serverless and easier to manage through CDK.
