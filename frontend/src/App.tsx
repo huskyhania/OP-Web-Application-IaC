@@ -6,7 +6,6 @@ function App() {
     try {
       const res = await fetch(`/photo`);
       const data = await res.json();
-      // open photo in a new tab
       window.open(data.url, "_blank");
     } catch {
       alert("Could not load photo 😢");
@@ -40,7 +39,7 @@ function App() {
             <button
               style={{ padding: "10px 20px", fontSize: "16px", borderRadius: "8px", cursor: "pointer" }}
             >
-              Tell me my fortune 🔮
+              Get to know your fortune 🔮
             </button>
           </Link>
         </div>

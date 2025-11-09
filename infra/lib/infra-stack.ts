@@ -9,7 +9,6 @@ import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as apigwInt from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
-import * as iam from "aws-cdk-lib/aws-iam";
 import { execSync } from "child_process";
 
 /* Full-stack application infrastructure (InfraStack),
@@ -42,28 +41,13 @@ export class InfraStack extends cdk.Stack {
       destinationBucket: photoBucket,
       destinationKeyPrefix: '',
       prune: false,
-      include: ['profile.png'], 
+      include: ['profile.jpg'], 
     });
 
-
-    /* Lambda backend with Fastify
-    const backendFn = new lambdaNodejs.NodejsFunction(this, "BackendFn", {
-      entry: path.join(__dirname, "../../backend/srcs/index.ts"),
-      handler: "handler",
-      runtime: lambda.Runtime.NODEJS_18_X,
-      environment: {
-        PHOTO_BUCKET: photoBucket.bucketName,
-        PHOTO_KEY: 'profile.jpg', 
-      },
-      depsLockFilePath: path.join(__dirname, "../../backend/package-lock.json"),
-      projectRoot: path.join(__dirname, "../../backend"),
-      timeout: cdk.Duration.seconds(10), 
-    });*/
-
     //Lambda using Dockerfile
-    const backendFn = new lambda.DockerImageFunction(this, "BackendFn", {
+    const backendLambda = new lambda.DockerImageFunction(this, "BackendLambda", {
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, "../../backend")),
-      functionName: `${this.stackName}-BackendFn`,
+      functionName: `${this.stackName}-BackendLambda`,
       timeout: cdk.Duration.seconds(10), 
       environment: {
         PHOTO_BUCKET: photoBucket.bucketName,
@@ -72,14 +56,14 @@ export class InfraStack extends cdk.Stack {
     });
     
     // Permissions for Lambda to use photo bucket
-    photoBucket.grantRead(backendFn);
+    photoBucket.grantRead(backendLambda);
 
 
     //API Gateway
     const api = new apigwv2.HttpApi(this, "HttpApi", {
       defaultIntegration: new apigwInt.HttpLambdaIntegration(
         "DefaultLambdaIntegration",
-        backendFn
+        backendLambda
       ),
       corsPreflight: {
         allowHeaders: ["Content-Type", "Authorization"],
@@ -95,24 +79,24 @@ export class InfraStack extends cdk.Stack {
     api.addRoutes({
       path: "/fortune",
       methods: [apigwv2.HttpMethod.GET],
-      integration: new apigwInt.HttpLambdaIntegration("FortuneIntegration", backendFn),
+      integration: new apigwInt.HttpLambdaIntegration("FortuneIntegration", backendLambda),
     });
     
     api.addRoutes({
       path: "/photo",
       methods: [apigwv2.HttpMethod.GET],
-      integration: new apigwInt.HttpLambdaIntegration("PhotoIntegration", backendFn),
+      integration: new apigwInt.HttpLambdaIntegration("PhotoIntegration", backendLambda),
     });
 
     // CloudFront Origin Access Identity (OAI) for S3 access
-    const oai = new cloudfront.OriginAccessIdentity(this, "SiteOAI");
+    const oai = new cloudfront.OriginAccessIdentity(this, "WebsiteOAI");
     siteBucket.grantRead(oai);
 
     /* Private bucket fix
     Custom Origin Request Policy to prevent 403 Forbidden
     Eensures the Host header (which CloudFront sets to its own domain) 
     is NOT forwarded to the API Gateway domain, which expects its own unique host*/
-    const apiRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'ApiForwardingPolicy', {
+    const apiRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'ApiRequestPolicy', {
       headerBehavior: cloudfront.OriginRequestHeaderBehavior.allowList(
           'Origin',
           'Content-Type',
@@ -150,7 +134,7 @@ export class InfraStack extends cdk.Stack {
             protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
           }),
           cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-          originRequestPolicy: apiRequestPolicy, // THE FIX
+          originRequestPolicy: apiRequestPolicy,
           viewerProtocolPolicy:
             cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         },

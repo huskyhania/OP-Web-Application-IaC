@@ -4,6 +4,8 @@ This project was created as part of the OP Kiitorata program technical assignmen
 
 The goal is to implement and deploy a Simple Web Application using Infrastructure as Code (IaC)
 
+---
+
 ## Overview:
 The application consists of three main parts:
 - Frontend: built with TypeScript, React, and Vite
@@ -13,8 +15,10 @@ The application consists of three main parts:
   - S3 buckets (store static website assets and images)
   - CloudFront (for global content delivery)
 
+---
+
 ## Prerequisites:
-In order to deploy the program you're going to need: Node.js and npm, AWS CLI, AWS CDK and Docker Desktop (for iOS/Windows deployment)
+In order to deploy the program you're going to need: Node.js and npm, AWS Command Line Interface (AWS CLI), AWS Cloud Development Kit (CDK) and Docker Desktop (for iOS/Windows deployment)
 
 Installing Node.js might require sudo rights. On Linux the commands are:
 ```bash
@@ -65,7 +69,7 @@ cdk bootstrap aws://<ACCOUNT_ID>/<REGION>
 ```bash
 cdk deploy
 ```
-9. To destroy the infrastrucre:
+9. To destroy the infrastructure:
 ```bash
 cdk destroy
 ```
@@ -76,11 +80,17 @@ Make sure your AWS account has the necessary permissions for CloudFormation, S3,
 Bootstrapping (```cdk bootstrap```) only needs to be done once per AWS account and region.
 It’s best practice to specify the account ID and region explicitly, and to use a dedicated IAM user or role for CDK deployments with the required permissions.
 
+---
+
 ## Limitations and next steps
 This project successfully deploys a full-stack web application using AWS CDK, but several parts remain simplified due to limited time and experience with cloud technologies.
 
-No CI/CD pipeline: Deployment is done manually using ```cdk deploy```. In a real-world scenario, this would be automated using GitHub Actions or AWS CodePipeline.
+**No CI/CD pipeline:** Deployment is done manually using ```cdk deploy```. In a real-world scenario, this would be automated using GitHub Actions or AWS CodePipeline.
 
-Limited backend: The Lambda function serves as a minimal proof of concept. It could be extended with additional routes, better error handling, and a database connection.
+**Limited backend:** The Lambda function serves as a minimal proof of concept. It could be extended with additional routes, better error handling, and a database connection.
 
-Security and monitoring: The setup does not yet include CloudWatch logging, detailed IAM role restrictions, or HTTPS certificates.
+**Security and monitoring:** The setup does not yet include CloudWatch logging, detailed IAM role restrictions, or HTTPS certificates.
+
+**Route 53 and custom domains:** I’m aware that AWS Route 53 could be used to attach a custom domain name to the CloudFront distribution (together with AWS Certificate Manager for HTTPS). For simplicity, this version uses the default CloudFront URL instead.
+
+**EC2 and alternative hosting options:** The backend could run on Amazon EC2 for more control over runtime and scaling. However, the choice of AWS Lambda made setup simpler, fully serverless, and easier to manage through CDK.
